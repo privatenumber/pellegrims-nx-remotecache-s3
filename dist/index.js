@@ -9733,10 +9733,21 @@ const createRemoteCache = (implementation, options) => {
         store: write ? (0, create_remote_cache_store_1.createRemoteCacheStore)(safeImplementation) : cacheNoop,
     };
 };
-const createCustomRunner = (setup) => (tasks, options, context) => (0, default_1.default)(tasks, {
-    ...options,
-    remoteCache: createRemoteCache(setup(options, tasks), options),
-}, context);
+const createCustomRunner = (setup) => {
+  console.log('createCustomRunner', {setup});
+  return (tasks, options, context) => {
+    console.log('createCustomRunner created', {
+      tasks,
+      options,
+      context,
+    });
+
+    return (0, default_1.default)(tasks, {
+      ...options,
+      remoteCache: createRemoteCache(setup(options, tasks), options),
+    }, context)
+  }
+};
 createCustomRunner$1.createCustomRunner = createCustomRunner;
 
 var customRunnerOptions = {};
@@ -10332,6 +10343,7 @@ const setupS3TaskRunner = async (options) => {
   const bucket = getEnv(ENV_BUCKET) ?? options.bucket;
   const prefix = getEnv(ENV_PREFIX) ?? options.prefix ?? "";
 
+  console.trace('setupS3TaskRunner');
   console.log('setupS3TaskRunner', {
     options,
     s3Storage,
