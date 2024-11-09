@@ -7587,6 +7587,12 @@ const createRemoteCacheRetrieve = (safeImplementation) => async (hash, cacheDire
     const file = (0, get_file_name_from_hash_1$1.getFileNameFromHash)(hash);
     const { fileExists, retrieveFile } = implementation;
     const isFileCached = await fileExists(file);
+    console.log('createRemoteCacheRetrieve', {
+      hash,
+      cacheDirectory,
+      file,
+      isFileCached,
+    });
     if (!isFileCached) {
         return false;
     }
@@ -9703,6 +9709,14 @@ const createRemoteCache = (implementation, options) => {
     const write = process.env.NXCACHE_WRITE
         ? process.env.NXCACHE_WRITE !== "false"
         : (_b = options.write) !== null && _b !== void 0 ? _b : true;
+
+    console.log('createRemoteCache', {
+      implementation,
+      options,
+      read,
+      write,
+    });
+
     // Do not even create the cache if both read and write are disabled
     if (!read && !write) {
         return {
@@ -10317,15 +10331,33 @@ const setupS3TaskRunner = async (options) => {
   const s3Storage = buildS3Client(options);
   const bucket = getEnv(ENV_BUCKET) ?? options.bucket;
   const prefix = getEnv(ENV_PREFIX) ?? options.prefix ?? "";
+
+  console.log('setupS3TaskRunner', {
+    options,
+    s3Storage,
+    bucket,
+    prefix,
+  });
+
   return {
     name: "S3",
     fileExists: async (filename) => {
+      console.log('setupS3TaskRunner:fileExists', {
+        filename,
+      });
       try {
+        console.log('setupS3TaskRunner:fileExists', {
+          buildCommonCommandInput: buildCommonCommandInput(bucket, prefix, filename),
+        });
+
         const result = await s3Storage.headObject(
           buildCommonCommandInput(bucket, prefix, filename)
         );
         return !!result;
       } catch (error) {
+        console.log('setupS3TaskRunner:fileExists', {
+          error,
+        });
         if (error.name === "403" || error.name === "NotFound") {
           return false;
         } else {
@@ -10334,16 +10366,30 @@ const setupS3TaskRunner = async (options) => {
       }
     },
     retrieveFile: async (filename) => {
+      console.log('setupS3TaskRunner:retrieveFile', {
+        filename,
+        buildCommonCommandInput: buildCommonCommandInput(bucket, prefix, filename),
+      });
+
       const result = await s3Storage.getObject(
         buildCommonCommandInput(bucket, prefix, filename)
       );
+      console.log('setupS3TaskRunner:retrieveFile', {
+        result
+      });
+
       return result.Body;
     },
     storeFile: (filename, stream) => {
+      const asdf = buildCommonCommandInput(bucket, prefix, filename);
+      console.log('setupS3TaskRunner:storeFile', {
+        buildCommonCommandInput: asdf,
+        stream,
+      });
       const upload = new libStorage.Upload({
         client: s3Storage,
         params: {
-          ...buildCommonCommandInput(bucket, prefix, filename),
+          ...asdf,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           Body: stream
         }
