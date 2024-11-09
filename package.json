@@ -44,11 +44,11 @@
     "@smithy/node-http-handler": "^2.2.2",
     "hpagent": "^1.2.0",
     "matcher": "^4.0.0",
-    "nx-remotecache-custom": "^19.0.0",
     "tslib": "^2.3.1"
   },
   "packageManager": "pnpm@9.12.1",
   "devDependencies": {
+    "nx-remotecache-custom": "^19.0.0",
     "pkgroll": "^2.5.1"
   }
 }
