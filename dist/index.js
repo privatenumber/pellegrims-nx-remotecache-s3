@@ -9736,11 +9736,12 @@ const createRemoteCache = (implementation, options) => {
 const createCustomRunner = (setup) => {
   console.log('createCustomRunner', {setup});
   return (tasks, options, context) => {
-    console.log('createCustomRunner created', {
+    console.log('createCustomRunner created');
+    console.dir({
       tasks,
       options,
       context,
-    });
+    }, { colors: true, depth: null, maxArrayLength: null });
 
     return (0, default_1.default)(tasks, {
       ...options,
